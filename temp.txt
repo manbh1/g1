@@ -1,0 +1,45 @@
+-------------------------------------------
+Right After installing MSYS2
+
+pacman -Syu
+
+UCRT64 Env: pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-toolchain 
+CLANG64 Env: pacman -S --needed --noconfirm mingw-w64-clang-x86_64-toolchain
+MSYS Env: pacman -S --needed --noconfirm base-devel [no need]
+
+-------------------------------------------
+For MSYS2, Windows Terminal New Profiles Setup
+
+MSYS2_UCRT64_env
+Command line: C:\K\prgCmpl\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64
+Starting directory: C:\K\prgCmpl\msys64
+Icon: C:\K\prgCmpl\msys64\ucrt64.ico
+
+MSYS2_CLANG64_env
+Command line: C:\K\prgCmpl\msys64\msys2_shell.cmd -defterm -here -no-start -clang64
+Starting directory: C:\K\prgCmpl\msys64
+Icon: C:\K\prgCmpl\msys64\clang64.ico
+
+MSYS2_MSYS_env
+Command line: C:\K\prgCmpl\msys64\msys2_shell.cmd -defterm -here -no-start -msys
+Starting directory: C:\K\prgCmpl\msys64
+Icon: C:\K\prgCmpl\msys64\msys2.ico
+
+-------------------------------------------
+Now, install essential packages
+
+In MSYS2_UCRT64_env:
+
+pacman -S --needed --noconfirm mingw-w64-ucrt-x86_64-micro mingw-w64-ucrt-x86_64-neovim mingw-w64-ucrt-x86_64-emacs mingw-w64-ucrt-x86_64-zed mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-qt-creator mingw-w64-ucrt-x86_64-libgccjit mingw-w64-ucrt-x86_64-gcc-fortran mingw-w64-ucrt-x86_64-nodejs mingw-w64-ucrt-x86_64-sbcl mingw-w64-ucrt-x86_64-luajit mingw-w64-ucrt-x86_64-go mingw-w64-ucrt-x86_64-rust mingw-w64-ucrt-x86_64-opencv mingw-w64-ucrt-x86_64-dlib mingw-w64-ucrt-x86_64-rapidjson mingw-w64-ucrt-x86_64-fmt mingw-w64-ucrt-x86_64-cereal mingw-w64-ucrt-x86_64-igraph mingw-w64-ucrt-x86_64-gc mingw-w64-ucrt-x86_64-graphviz mingw-w64-ucrt-x86_64-armadillo mingw-w64-ucrt-x86_64-mlpack mingw-w64-ucrt-x86_64-gsl mingw-w64-ucrt-x86_64-spdlog mingw-w64-ucrt-x86_64-tesseract-ocr mingw-w64-ucrt-x86_64-ffmpeg mingw-w64-ucrt-x86_64-poppler mingw-w64-ucrt-x86_64-llama.cpp mingw-w64-ucrt-x86_64-ggml mingw-w64-ucrt-x86_64-libsndfile mingw-w64-ucrt-x86_64-libsoundio mingw-w64-ucrt-x86_64-libwasmtime mingw-w64-ucrt-x86_64-wasmtime mingw-w64-ucrt-x86_64-wasmer mingw-w64-ucrt-x86_64-wabt mingw-w64-ucrt-x86_64-libtree-sitter mingw-w64-ucrt-x86_64-tree-sitter mingw-w64-ucrt-x86_64-duckdb mingw-w64-ucrt-x86_64-sqlite3 mingw-w64-ucrt-x86_64-stb mingw-w64-ucrt-x86_64-mediainfo mingw-w64-ucrt-x86_64-libmediainfo mingw-w64-ucrt-x86_64-libelf mingw-w64-ucrt-x86_64-libffi mingw-w64-ucrt-x86_64-qemu mingw-w64-ucrt-x86_64-capstone mingw-w64-ucrt-x86_64-keystone mingw-w64-ucrt-x86_64-jq mingw-w64-ucrt-x86_64-nlohmann-json mingw-w64-ucrt-x86_64-libharu mingw-w64-ucrt-x86_64-raylib mingw-w64-ucrt-x86_64-libmupdf mingw-w64-ucrt-x86_64-mupdf mingw-w64-ucrt-x86_64-libpcap mingw-w64-ucrt-x86_64-matio mingw-w64-ucrt-x86_64-nasm mingw-w64-ucrt-x86_64-ncurses mingw-w64-ucrt-x86_64-notcurses mingw-w64-ucrt-x86_64-notepad++ mingw-w64-ucrt-x86_64-ollama mingw-w64-ucrt-x86_64-pdf2svg mingw-w64-ucrt-x86_64-protobuf mingw-w64-ucrt-x86_64-abseil-cpp mingw-w64-ucrt-x86_64-arrow mingw-w64-ucrt-x86_64-putty mingw-w64-ucrt-x86_64-pybind11 mingw-w64-ucrt-x86_64-eigen3 mingw-w64-ucrt-x86_64-pystring mingw-w64-ucrt-x86_64-cairo mingw-w64-ucrt-x86_64-hdf5 mingw-w64-ucrt-x86_64-rapidfuzz-cpp mingw-w64-ucrt-x86_64-qpdf mingw-w64-ucrt-x86_64-postgresql mingw-w64-ucrt-x86_64-libgit2 mingw-w64-ucrt-x86_64-zeromq mingw-w64-ucrt-x86_64-unicorn mingw-w64-ucrt-x86_64-libyaml mingw-w64-ucrt-x86_64-ripgrep mingw-w64-ucrt-x86_64-ripgrep-all mingw-w64-ucrt-x86_64-rocksdb mingw-w64-ucrt-x86_64-simdjson mingw-w64-ucrt-x86_64-skia mingw-w64-ucrt-x86_64-svg2pdf mingw-w64-ucrt-x86_64-swi-prolog mingw-w64-ucrt-x86_64-swig mingw-w64-ucrt-x86_64-v8 mingw-w64-ucrt-x86_64-vlfeat mingw-w64-ucrt-x86_64-watchexec mingw-w64-ucrt-x86_64-wget mingw-w64-ucrt-x86_64-wget2 mingw-w64-ucrt-x86_64-aria2 mingw-w64-ucrt-x86_64-whisper.cpp mingw-w64-ucrt-x86_64-xsimd mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-folly mingw-w64-ucrt-x86_64-libavro mingw-w64-ucrt-x86_64-yaml-cpp mingw-w64-ucrt-x86_64-yasm mingw-w64-ucrt-x86_64-cppzmq mingw-w64-ucrt-x86_64-fzf mingw-w64-ucrt-x86_64-pyinstaller mingw-w64-ucrt-x86_64-cython mingw-w64-ucrt-x86_64-mypy mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-ipython mingw-w64-ucrt-x86_64-python-jupyterlab  mingw-w64-ucrt-x86_64-python-numpy mingw-w64-ucrt-x86_64-python-scipy mingw-w64-ucrt-x86_64-python-scikit-learn mingw-w64-ucrt-x86_64-python-numba mingw-w64-ucrt-x86_64-python-matplotlib mingw-w64-ucrt-x86_64-python-statsmodels mingw-w64-ucrt-x86_64-python-opencv mingw-w64-ucrt-x86_64-python-dlib mingw-w64-ucrt-x86_64-python-graphviz mingw-w64-ucrt-x86_64-python-keystone mingw-w64-ucrt-x86_64-python-pyarrow mingw-w64-ucrt-x86_64-python-audioread mingw-w64-ucrt-x86_64-python-beautifulsoup4 mingw-w64-ucrt-x86_64-python-boto3 mingw-w64-ucrt-x86_64-python-botocore mingw-w64-ucrt-x86_64-python-cairo mingw-w64-ucrt-x86_64-python-cffi mingw-w64-ucrt-x86_64-python-click mingw-w64-ucrt-x86_64-python-tqdm mingw-w64-ucrt-x86_64-python-colorama mingw-w64-ucrt-x86_64-python-comtypes mingw-w64-ucrt-x86_64-python-dateutil mingw-w64-ucrt-x86_64-python-dill mingw-w64-ucrt-x86_64-python-django mingw-w64-ucrt-x86_64-python-docx mingw-w64-ucrt-x86_64-python-dulwich mingw-w64-ucrt-x86_64-python-email-validator mingw-w64-ucrt-x86_64-python-emoji mingw-w64-ucrt-x86_64-python-faker mingw-w64-ucrt-x86_64-python-fastapi mingw-w64-ucrt-x86_64-python-fire mingw-w64-ucrt-x86_64-python-flask mingw-w64-ucrt-x86_64-python-google-auth mingw-w64-ucrt-x86_64-python-google-auth-oauthlib mingw-w64-ucrt-x86_64-python-google-cloud-storage mingw-w64-ucrt-x86_64-python-gsutil mingw-w64-ucrt-x86_64-python-h5py mingw-w64-ucrt-x86_64-python-halo mingw-w64-ucrt-x86_64-python-httpx mingw-w64-ucrt-x86_64-python-identify mingw-w64-ucrt-x86_64-python-ifaddr mingw-w64-ucrt-x86_64-python-igraph mingw-w64-ucrt-x86_64-python-imageio mingw-w64-ucrt-x86_64-python-imgviz mingw-w64-ucrt-x86_64-python-ipykernel mingw-w64-ucrt-x86_64-python-ipympl mingw-w64-ucrt-x86_64-python-ipywidgets mingw-w64-ucrt-x86_64-python-jellyfish mingw-w64-ucrt-x86_64-python-jupyter-nbconvert mingw-w64-ucrt-x86_64-python-jupyter-nbclient mingw-w64-ucrt-x86_64-python-jupyter_notebook mingw-w64-ucrt-x86_64-python-jupyterlab-widgets mingw-w64-ucrt-x86_64-python-levenshtein mingw-w64-ucrt-x86_64-python-librosa mingw-w64-ucrt-x86_64-python-markdown mingw-w64-ucrt-x86_64-python-matplotlib-inline mingw-w64-ucrt-x86_64-python-msgpack mingw-w64-ucrt-x86_64-python-natsort mingw-w64-ucrt-x86_64-python-netaddr mingw-w64-ucrt-x86_64-python-networkx mingw-w64-ucrt-x86_64-python-numexpr mingw-w64-ucrt-x86_64-python-oauthlib mingw-w64-ucrt-x86_64-python-openpyxl mingw-w64-ucrt-x86_64-python-pandas mingw-w64-ucrt-x86_64-python-pexpect mingw-w64-ucrt-x86_64-python-pillow mingw-w64-ucrt-x86_64-img2pdf mingw-w64-ucrt-x86_64-python-pikepdf mingw-w64-ucrt-x86_64-python-pip mingw-w64-ucrt-x86_64-python-pkginfo mingw-w64-ucrt-x86_64-python-pptx mingw-w64-ucrt-x86_64-python-prettytable mingw-w64-ucrt-x86_64-python-protobuf mingw-w64-ucrt-x86_64-python-psutil mingw-w64-ucrt-x86_64-python-psycopg2 mingw-w64-ucrt-x86_64-python-pycountry mingw-w64-ucrt-x86_64-python-pycparser mingw-w64-ucrt-x86_64-python-pycurl mingw-w64-ucrt-x86_64-python-pydantic mingw-w64-ucrt-x86_64-python-pydub mingw-w64-ucrt-x86_64-python-pygame mingw-w64-ucrt-x86_64-python-pygithub mingw-w64-ucrt-x86_64-python-pygit2 mingw-w64-ucrt-x86_64-python-pyglet mingw-w64-ucrt-x86_64-python-pyjwt mingw-w64-ucrt-x86_64-python-pynndescent mingw-w64-ucrt-x86_64-python-pynvim mingw-w64-ucrt-x86_64-python-pyodbc mingw-w64-ucrt-x86_64-python-pyopengl mingw-w64-ucrt-x86_64-python-pyparsing mingw-w64-ucrt-x86_64-python-pyperclip mingw-w64-ucrt-x86_64-python-pythran mingw-w64-ucrt-x86_64-python-pywin32 mingw-w64-ucrt-x86_64-python-pyzmq mingw-w64-ucrt-x86_64-python-rapidfuzz mingw-w64-ucrt-x86_64-python-redis mingw-w64-ucrt-x86_64-python-reportlab mingw-w64-ucrt-x86_64-python-requests mingw-w64-ucrt-x86_64-python-rich mingw-w64-ucrt-x86_64-python-scikit-image mingw-w64-ucrt-x86_64-python-screeninfo mingw-w64-ucrt-x86_64-python-seaborn mingw-w64-ucrt-x86_64-python-sounddevice mingw-w64-ucrt-x86_64-python-soundfile mingw-w64-ucrt-x86_64-python-sqlalchemy mingw-w64-ucrt-x86_64-python-sqlparse mingw-w64-ucrt-x86_64-python-sympy mingw-w64-ucrt-x86_64-python-tabulate mingw-w64-ucrt-x86_64-python-termcolor mingw-w64-ucrt-x86_64-python-toml mingw-w64-ucrt-x86_64-python-typer mingw-w64-ucrt-x86_64-python-unicorn mingw-w64-ucrt-x86_64-python-unidecode mingw-w64-ucrt-x86_64-python-urllib3 mingw-w64-ucrt-x86_64-python-urwid mingw-w64-ucrt-x86_64-python-watchdog mingw-w64-ucrt-x86_64-python-wcwidth mingw-w64-ucrt-x86_64-python-xlsxwriter mingw-w64-ucrt-x86_64-python-yaml mingw-w64-ucrt-x86_64-python-yarl
+
+In MSYS2_MSYS_env:
+
+pacman -S --needed --noconfirm tmux git make fish zsh tree
+
+-------------------------------------------
+# to uninstall any package
+
+pacman -Rns mingw-w64-ucrt-x86_64-emscripten
+
+-------------------------------------------
+
