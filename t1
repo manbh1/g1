@@ -1,0 +1,152 @@
+import numpy as np
+import scipy.sparse
+import sklearn.neighbors
+import sklearn.preprocessing
+import itertools
+
+# ==========================================
+# 1. SETUP DUMMY DATA (Simulating the Database)
+# ==========================================
+NUM_DIAGS = 100_000
+NUM_PROCS = 6_000
+
+# Mock LLM Embeddings (e.g., 768-D from Zambat/Qwen)
+np.random.seed(42)
+print("Generating mock text embeddings...")
+diag_embeddings = np.random.rand(NUM_DIAGS, 768)
+proc_embeddings = np.random.rand(NUM_PROCS, 768)
+
+# Mock Historical Claims: A realistic list where each claim is a SET of codes.
+mock_historical_claims = [
+    {'diags': [10, 45], 'procs': [100, 205, 99]}, # 2 Diags, 3 Procs (6 pairs)
+    {'diags': [999, 12, 0], 'procs': [4000, 205]}, # 3 Diags, 2 Procs (6 pairs)
+    {'diags': [45], 'procs': [99]}, # 1 Diag, 1 Proc (1 pair)
+    {'diags': [10, 999, 50], 'procs': [100, 205, 4000]} # 3 Diags, 3 Procs (9 pairs)
+]
+
+# ==========================================
+# 2. EXTRACT ALL PAIRS (CARTESIAN PRODUCT)
+# ==========================================
+print("Extracting Cartesian pairs from historical claims...")
+diag_indices = []
+proc_indices = []
+
+for claim in mock_historical_claims:
+    # itertools.product pairs every diag with every proc in THIS specific claim
+    for d, p in itertools.product(claim['diags'], claim['procs']):
+        diag_indices.append(d)
+        proc_indices.append(p)
+
+# Array of 1s representing each exact co-occurrence
+data_ones = np.ones(len(diag_indices), dtype=np.float32)
+
+# ==========================================
+# 3. BUILD THE RAW COUNT MATRIX (C)
+# ==========================================
+print("Building Count Matrix C...")
+# scipy.sparse.coo_matrix automatically sums the 1s for duplicate (Diag, Proc) coordinates.
+# If you process 500,000 claims, data_ones will have millions of items, and it handles it instantly.
+C_coo = scipy.sparse.coo_matrix(
+    (data_ones, (diag_indices, proc_indices)), 
+    shape=(NUM_DIAGS, NUM_PROCS)
+)
+
+# Convert to Compressed Sparse Row (CSR) for fast math
+C = C_coo.tocsr()
+
+# ==========================================
+# 4. BUILD SIMILARITY MATRICES (D & P)
+# ==========================================
+print("Building Similarity Matrices D and P...")
+
+# --- A. Diagnosis Similarity Matrix (D) ---
+D = sklearn.neighbors.kneighbors_graph(
+    diag_embeddings, 
+    n_neighbors=10, 
+    mode='distance', 
+    metric='cosine', 
+    include_self=True
+)
+
+# Convert Cosine Distance to Cosine Similarity and clean floating-point noise
+D.data = 1.0 - D.data
+D.data = np.clip(D.data, 0.0, 1.0)
+
+# Boost the self-diagonal identity by 9.0 (Total = 10.0) so it keeps its core identity
+D = D + (scipy.sparse.eye(NUM_DIAGS, format='csr') * 9.0)
+D.eliminate_zeros()
+
+# Row-Normalize D using fully qualified namespace
+D_norm = sklearn.preprocessing.normalize(D, norm='l1', axis=1)
+
+# --- B. Procedure Similarity Matrix (P) ---
+P = sklearn.neighbors.kneighbors_graph(
+    proc_embeddings, 
+    n_neighbors=10, 
+    mode='distance', 
+    metric='cosine', 
+    include_self=True
+)
+
+P.data = 1.0 - P.data
+P.data = np.clip(P.data, 0.0, 1.0)
+P = P + (scipy.sparse.eye(NUM_PROCS, format='csr') * 9.0)
+P.eliminate_zeros()
+
+P_norm = sklearn.preprocessing.normalize(P, norm='l1', axis=1)
+
+# ==========================================
+# 5. GRAPH CONVOLUTION (THE MATH)
+# ==========================================
+print("Performing Matrix Smoothing (D * C * P)...")
+# The '@' operator utilizes optimized C++ underneath for sparse matrix multiplication
+Smoothed_C = D_norm @ C @ P_norm
+
+# ==========================================
+# 6. FINAL PROBABILITIES
+# ==========================================
+print("Calculating Final Probabilities...")
+Final_Probabilities = sklearn.preprocessing.normalize(Smoothed_C, norm='l1', axis=1)
+print("Pipeline Complete!\n")
+
+# ==========================================
+# 7. REALISTIC INFERENCE ENGINE (LIVE CLAIM)
+# ==========================================
+print("--- REALISTIC FWA DETECTION ON A LIVE CLAIM ---")
+
+# A live claim arrives with a BAG of diagnoses and a BAG of procedures.
+live_claim = {
+    'diags': [10, 45, 999], # The patient has 3 different diagnoses
+    'procs': [100, 205, 5999] # The hospital billed 3 procedures
+}
+
+print(f"Submitted Diagnoses: {live_claim['diags']}")
+print(f"Submitted Procedures: {live_claim['procs']}\n")
+
+ANOMALY_THRESHOLD = 0.001 # E.g., if probability is < 0.1%, flag it
+
+# We must evaluate every procedure billed in the claim
+for billed_proc in live_claim['procs']:
+    
+    # Extract the probabilities for THIS procedure across ALL diagnoses in the claim
+    # Slicing the CSR matrix returns a shape of (num_diags, 1), which we flatten to a 1D array
+    probs_given_diags = Final_Probabilities[live_claim['diags'], billed_proc].toarray().flatten()
+    
+    # REALISTIC MEDICAL LOGIC: 
+    # A procedure is valid if AT LEAST ONE diagnosis mathematically justifies it.
+    # Therefore, we extract the MAXIMUM probability provided by any diagnosis in the claim.
+    best_justification_prob = np.max(probs_given_diags)
+    
+    # Identify WHICH diagnosis provided the best justification (for explainability)
+    best_diag_index = np.argmax(probs_given_diags)
+    justifying_diag = live_claim['diags'][best_diag_index]
+    
+    # Evaluate against the threshold
+    if best_justification_prob < ANOMALY_THRESHOLD:
+        print(f"[FLAGGED] Procedure {billed_proc:4} is an ANOMALY.")
+        print(f" Reason: Not mathematically justified by ANY diagnosis in this claim.")
+        print(f" (Highest probability was only {best_justification_prob:.6f} via Diag {justifying_diag})\n")
+    else:
+        print(f"[OK] Procedure {billed_proc:4} is NORMAL.")
+        print(f" Reason: Medically justified.")
+        print(f" (Highest probability was {best_justification_prob:.6f} via Diag {justifying_diag})\n")
