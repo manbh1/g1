@@ -1,0 +1,27 @@
+To get the best results from an LLM, you should not ask it to generate keys bi-directionally (from A to B, and B to A). Because SQL join conditions like A.id = B.id are mathematically commutative, asking for both directions will waste the LLM's output tokens and increase your API costs.
+ 
+Instead, you should ask the LLM to output a single directional relationship that includes the structural cardinality (e.g., One-to-Many).
+ 
+🧱 Why a Simple Key Pair is Not Enough
+ 
+Just knowing that table_a.user_id matches table_b.id is not enough for accurate documentation. If the LLM does not specify which table holds the unique key, you won't know:
+ 
+Which table will cause row duplication if joined improperly.Which table to use as the base FROM table vs. the LEFT JOIN table.How the data aggregates.
+ 
+📋 The Ideal LLM Output Structure
+ 
+Instead of asking for dual directions or full SELECT query examples, ask the LLM for a structured, single-entry relationship map.
+ 
+Recommended JSON/Markdown Schema for the LLM:
+ 
+{ "source_table": "orders", "target_table": "users", "source_keys": ["user_id"], "target_keys": ["id"], "cardinality": "Many-to-One", "confidence_score": "High", "notes": "orders.user_id is a foreign key referencing the primary key users.id." } 
+ 
+🤖 Optimized Prompt Blueprint
+ 
+When you prompt your LLM, pass your data dictionary and schemas, then use this specific instruction set: [1, 2, 3] 
+ 
+You are an expert data architect. Analyze the provided database schemas and data dictionaries. Identify the most likely joining keys between the tables. For every identified valid relationship between any two tables, output a single record using the following rules: 1. Directional Anchor: Always set the "source_table" as the table containing the Foreign Key (the 'Many' side) and the "target_table" as the Primary Key table (the 'One' side). If it is a One-to-One relationship, alphabetize the table names. 2. Deduplication: Do not output reverse pairs (e.g., if you document A to B, do not document B to A). 3. Output Format: Provide the output as a clean markdown table with these columns: Source Table | Source Key | Target Table | Target Key | Cardinality (e.g., 1:N, N:1, 1:1) | Confidence (High/Med/Low). 
+ 
+🚀 Why This Approach Works Better
+ 
+Saves Tokens: Cutting out the reverse direction halves your LLM generation length.Prevents Code Hallucinations: Asking for full LEFT JOIN examples often causes the LLM to hallucinate fake column names just to make a pretty query.Easier to Parse: A structured markdown table or JSON array can be directly converted into a permanent data catalog or fed into visualization tools like Mermaid.js to draw your ERD (Entity-Relationship Diagram).
